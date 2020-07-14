@@ -1,4 +1,4 @@
-# ansible-role-prometheus
+# ansible-role-prometheus [![Build Status](https://travis-ci.org/izumimatsuo/ansible-role-prometheus.svg?branch=master)](https://travis-ci.org/izumimatsuo/ansible-role-prometheus)
 
 監視機能を導入するansible-roleです
 
