@@ -1,0 +1,38 @@
+---
+# tasks file for ansible-role-prometheus
+- name: detect node_exporter is installed
+  stat:
+    path: /usr/local/bin/node_exporter
+  register: node_exporter_bin
+  tags: prometheus
+
+- block:
+  - name: download node_exporter {{ NODE_EXPORTER_VERSION }}
+    unarchive:
+      src: https://github.com/prometheus/node_exporter/releases/download/v{{ NODE_EXPORTER_VERSION }}/node_exporter-{{ NODE_EXPORTER_VERSION }}.linux-amd64.tar.gz # noqa 204
+      dest: /tmp
+      remote_src: yes
+  - name: install node_exporter
+    command: mv /tmp/node_exporter-{{ NODE_EXPORTER_VERSION }}.linux-amd64/node_exporter /usr/local/bin/node_exporter
+  when: not node_exporter_bin.stat.exists
+  tags: prometheus
+
+- name: copy node_exporter service file
+  template:
+    src: node_exporter.service.j2
+    dest: /usr/lib/systemd/system/node_exporter.service
+    owner: root
+    group: root
+    mode: '0644'
+  tags: prometheus
+
+- name: daemon-reload
+  systemd: daemon_reload=yes
+  tags: prometheus
+
+- name: start node_exporter service
+  service:
+    name: node_exporter
+    state: started
+    enabled: yes
+  tags: prometheus

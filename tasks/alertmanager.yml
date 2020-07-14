@@ -1,0 +1,50 @@
+---
+# tasks file for ansible-role-prometheus
+- name: detect alertmanage is installed
+  stat:
+    path: /usr/local/bin/alertmanager
+  register: alertmanager_bin
+  tags: prometheus
+
+- block:
+  - name: download alertmanager {{ ALERTMANAGER_VERSION }}
+    unarchive:
+      src: https://github.com/prometheus/alertmanager/releases/download/v{{ ALERTMANAGER_VERSION }}/alertmanager-{{ ALERTMANAGER_VERSION }}.linux-amd64.tar.gz
+      dest: /tmp
+      remote_src: yes
+  - name: install alertmanager
+    command: mv /tmp/alertmanager-{{ ALERTMANAGER_VERSION }}.linux-amd64/alertmanager /usr/local/bin/alertmanager
+  - name: install amtool
+    command: mv /tmp/alertmanager-{{ ALERTMANAGER_VERSION }}.linux-amd64/amtool /usr/local/bin/amtool
+  when: not alertmanager_bin.stat.exists
+  tags: prometheus
+
+- name: copy alertmanaer conf file
+  template:
+    src: alertmanager.yml.j2
+    dest: /etc/prometheus/alertmanager.yml
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart alertmanager service
+  tags: prometheus
+
+- name: copy alertmanager service file
+  template:
+    src: alertmanager.service.j2
+    dest: /usr/lib/systemd/system/alertmanager.service
+    owner: root
+    group: root
+    mode: '0644'
+  tags: prometheus
+
+- name: daemon-reload
+  systemd: daemon_reload=yes
+  tags: prometheus
+
+- name: start alertmanager service
+  service:
+    name: alertmanager
+    state: started
+    enabled: yes
+  tags: prometheus

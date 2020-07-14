@@ -1,0 +1,48 @@
+---
+# tasks file for ansible-role-prometheus
+- name: detect blackbox_exporter is installed
+  stat:
+    path: /usr/local/bin/blackbox_exporter
+  register: blackbox_exporter_bin
+  tags: prometheus
+
+- block:
+  - name: download blackbox_exporter {{ BLACKBOX_EXPORTER_VERSION }}
+    unarchive:
+      src: https://github.com/prometheus/blackbox_exporter/releases/download/v{{ BLACKBOX_EXPORTER_VERSION }}/blackbox_exporter-{{ BLACKBOX_EXPORTER_VERSION }}.linux-amd64.tar.gz # noqa 204
+      dest: /tmp
+      remote_src: yes
+  - name: install blackbox_exporter
+    command: mv /tmp/blackbox_exporter-{{ BLACKBOX_EXPORTER_VERSION }}.linux-amd64/blackbox_exporter /usr/local/bin/blackbox_exporter
+  when: not blackbox_exporter_bin.stat.exists
+  tags: prometheus
+
+- name: copy blackbox_exporter conf file
+  template:
+    src: blackbox.yml.j2
+    dest: /etc/prometheus/blackbox.yml
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart blackbox_exporter service
+  tags: prometheus
+
+- name: copy blackbox_exporter service file
+  template:
+    src: blackbox_exporter.service.j2
+    dest: /usr/lib/systemd/system/blackbox_exporter.service
+    owner: root
+    group: root
+    mode: '0644'
+  tags: prometheus
+
+- name: daemon-reload
+  systemd: daemon_reload=yes
+  tags: prometheus
+
+- name: start blackbox_exporter service
+  service:
+    name: blackbox_exporter
+    state: started
+    enabled: yes
+  tags: prometheus

@@ -1,0 +1,6 @@
+groups:
+  - name: example
+    rules:
+    - alert: NodeInstanceDown
+      expr: up{job='node'} == 0
+      for: 30s

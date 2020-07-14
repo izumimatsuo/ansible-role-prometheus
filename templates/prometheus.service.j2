@@ -1,0 +1,15 @@
+[Unit]
+Description=Prometheus - Monitoring system and time series database
+
+[Service]
+Restart=always
+User=prometheus
+ExecStart=/usr/local/bin/prometheus --config.file=/etc/prometheus/prometheus.yml \
+                                    --storage.tsdb.path={{ prometheus_storage_path }}/metrics \
+                                    --storage.tsdb.retention.time={{ prometheus_tsdb_retention_time }}
+ExecReload=/bin/kill -HUP $MAINPID
+TimeoutStopSec=20s
+SendSIGKILL=no
+
+[Install]
+WantedBy=multi-user.target

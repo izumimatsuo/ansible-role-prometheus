@@ -1,0 +1,50 @@
+---
+# tasks file for ansible-role-prometheus
+- name: detect prometheus is installed
+  stat:
+    path: /usr/local/bin/prometheus
+  register: prometheus_bin
+  tags: prometheus
+
+- block:
+  - name: download prometheus {{ PROMETHEUS_VERSION }}
+    unarchive:
+      src: https://github.com/prometheus/prometheus/releases/download/v{{ PROMETHEUS_VERSION }}/prometheus-{{ PROMETHEUS_VERSION }}.linux-amd64.tar.gz
+      dest: /tmp
+      remote_src: yes
+  - name: install prometheus
+    command: mv /tmp/prometheus-{{ PROMETHEUS_VERSION }}.linux-amd64/prometheus /usr/local/bin/prometheus
+  - name: install promtool
+    command: mv /tmp/prometheus-{{ PROMETHEUS_VERSION }}.linux-amd64/promtool /usr/local/bin/promtool
+  when: not prometheus_bin.stat.exists
+  tags: prometheus
+
+- name: copy prometheus conf file
+  template:
+    src: prometheus.yml.j2
+    dest: /etc/prometheus/prometheus.yml
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart prometheus service
+  tags: prometheus
+
+- name: copy prometheus service file
+  template:
+    src: prometheus.service.j2
+    dest: /usr/lib/systemd/system/prometheus.service
+    owner: root
+    group: root
+    mode: '0644'
+  tags: prometheus
+
+- name: daemon-reload
+  systemd: daemon_reload=yes
+  tags: prometheus
+
+- name: start prometheus service
+  service:
+    name: prometheus
+    state: started
+    enabled: yes
+  tags: prometheus

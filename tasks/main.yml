@@ -1,0 +1,39 @@
+---
+# tasks file for ansible-role-prometheus
+- name: create prometheus user
+  user:
+    name: prometheus
+    createhome: no
+    system: yes
+    shell: /sbin/nologin
+  tags: prometheus
+
+- name: create prometheus conf directory
+  file:
+    path: /etc/prometheus
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  tags: prometheus
+
+- name: create prometheus data directory
+  file:
+    path: '{{ prometheus_storage_path }}'
+    state: directory
+    owner: prometheus
+    group: prometheus
+    mode: '0755'
+  tags: prometheus
+
+- include_tasks: node_exporter.yml
+  tags: prometheus
+
+- include_tasks: prometheus.yml
+  tags: prometheus
+
+- include_tasks: alertmanager.yml
+  tags: prometheus
+
+- include_tasks: blackbox_exporter.yml
+  tags: prometheus
