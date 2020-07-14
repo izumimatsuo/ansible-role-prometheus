@@ -17,5 +17,6 @@
 
 | 項目名             | デフォルト値| 説明               |
 | ------------------ | ----------- | ------------------ |
+| prometheus_server | yes          | サーバへ導入       |
 | prometheus_storage_path | /var/lib/prometheus | データディレクトリ |
 | prometheus_tsdb_retention_time | 15d | データ保存期間 |

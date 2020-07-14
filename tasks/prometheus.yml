@@ -29,6 +29,16 @@
   notify: restart prometheus service
   tags: prometheus
 
+- name: copy prometheus alert_rules file
+  template:
+    src: alert_rules.yml.j2
+    dest: /etc/prometheus/alert_rules.yml
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart prometheus service
+  tags: prometheus
+
 - name: copy prometheus service file
   template:
     src: prometheus.service.j2

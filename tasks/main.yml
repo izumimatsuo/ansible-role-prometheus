@@ -4,7 +4,6 @@
   user:
     name: prometheus
     createhome: no
-    system: yes
     shell: /sbin/nologin
   tags: prometheus
 
@@ -15,6 +14,7 @@
     owner: root
     group: root
     mode: '0755'
+  when: prometheus_server
   tags: prometheus
 
 - name: create prometheus data directory
@@ -24,16 +24,20 @@
     owner: prometheus
     group: prometheus
     mode: '0755'
+  when: prometheus_server
   tags: prometheus
 
 - include_tasks: node_exporter.yml
   tags: prometheus
 
 - include_tasks: prometheus.yml
+  when: prometheus_server
   tags: prometheus
 
 - include_tasks: alertmanager.yml
+  when: prometheus_server
   tags: prometheus
 
 - include_tasks: blackbox_exporter.yml
+  when: prometheus_server
   tags: prometheus
