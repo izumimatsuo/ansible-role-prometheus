@@ -14,6 +14,8 @@
       remote_src: yes
   - name: install blackbox_exporter
     command: mv /tmp/blackbox_exporter-{{ BLACKBOX_EXPORTER_VERSION }}.linux-amd64/blackbox_exporter /usr/local/bin/blackbox_exporter
+  - name: setcap blackbox_exporter
+    command:  setcap cap_net_raw=+ep /usr/local/bin/blackbox_exporter
   when: not blackbox_exporter_bin.stat.exists
   tags: prometheus
 
