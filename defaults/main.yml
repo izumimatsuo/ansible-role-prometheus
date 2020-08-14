@@ -3,3 +3,6 @@
 prometheus_server: no
 prometheus_storage_path: '/var/lib/prometheus'
 prometheus_tsdb_retention_time: '15d' # --storage.tsdb.retention.time
+alert_email_host:
+alert_email_from:
+alert_email_to:

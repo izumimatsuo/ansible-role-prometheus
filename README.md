@@ -27,6 +27,9 @@ CentOS7 へ監視機能を導入するansible-roleです
 | prometheus_server              | no                  | サーバへ導入       |
 | prometheus_storage_path        | /var/lib/prometheus | データディレクトリ |
 | prometheus_tsdb_retention_time | 15d                 | データ保存期間     |
+| alert_email_host               | none                | メールホスト       |
+| alert_email_from               | none                | メール送信元       |
+| alert_email_to                 | none                | メール送信先       |
 
 ## アラート通知のルール
 
