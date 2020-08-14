@@ -9,7 +9,7 @@
 
 - name: create prometheus conf directory
   file:
-    path: /etc/prometheus
+    path: /etc/prometheus/targets
     state: directory
     owner: root
     group: root

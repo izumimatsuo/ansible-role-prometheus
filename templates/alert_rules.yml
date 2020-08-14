@@ -1,9 +1,21 @@
 groups:
+- name: prometheus
+  rules:
+
+  - alert: PrometheusTargetMissing
+    expr: up == 0
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Prometheus target missing (instance {{ $labels.instance }})"
+      description: "A Prometheus target has disappeared. An exporter might be crashed.\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
 - name: node-exporter
   rules:
 
   - alert: HostHighCpuLoad
-    expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
+    expr: (1 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])))) * 100 > 90
     for: 5m
     labels:
       severity: warning
@@ -21,31 +33,31 @@ groups:
       description: "CPU loadaverage (normalize) is > 1\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
 
   - alert: HostOutOfMemory
-    expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 10
+    expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 90
     for: 5m
     labels:
       severity: warning
     annotations:
       summary: "Host out of memory (instance {{ $labels.instance }})"
-      description: "Node memory is filling up (< 10% left)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+      description: "Node memory is filling up (> 90%)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
 
   - alert: HostSwapIsFillingUp
-    expr: (1 - (node_memory_SwapFree_bytes / node_memory_SwapTotal_bytes)) * 100 > 80
+    expr: (1 - (node_memory_SwapFree_bytes / node_memory_SwapTotal_bytes)) * 100 > 90
     for: 5m
     labels:
       severity: warning
     annotations:
       summary: "Host swap is filling up (instance {{ $labels.instance }})"
-      description: "Swap is filling up (>80%)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+      description: "Swap is filling up (> 90%)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
 
   - alert: HostOutOfDiskSpace
-    expr: (node_filesystem_avail_bytes{mountpoint="/", fstype!="/rootfs"}  * 100) / node_filesystem_size_bytes{mountpoint="/", fstype!="/rootfs"} < 10
+    expr: (1 - (node_filesystem_avail_bytes{mountpoint="/", fstype!="/rootfs"} / node_filesystem_size_bytes{mountpoint="/", fstype!="/rootfs"})) * 100 > 90
     for: 5m
     labels:
       severity: warning
     annotations:
       summary: "Host out of disk space (instance {{ $labels.instance }})"
-      description: "Disk is almost full (< 10% left)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+      description: "Disk is almost full (> 90%)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
 
   - alert: HostDiskWillFillIn6Hours
     expr: predict_linear(node_filesystem_free_bytes{fstype!~"tmpfs"}[1h], 6 * 3600) < 0
@@ -81,7 +93,7 @@ groups:
       severity: warning
     annotations:
       summary: "Host unusual network throughput in (instance {{ $labels.instance }})"
-      description: "Host network interfaces are probably receiving too much data (> 100 MB/s)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+      description: "Host network interfaces are probably receiving too much data (> 100MB/s)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
 
   - alert: HostUnusualNetworkThroughputOut
     expr: sum by (instance) (irate(node_network_transmit_bytes_total[2m])) / 1024 / 1024 > 100
@@ -90,32 +102,33 @@ groups:
       severity: warning
     annotations:
       summary: "Host unusual network throughput out (instance {{ $labels.instance }})"
-      description: "Host network interfaces are probably sending too much data (> 100 MB/s)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+      description: "Host network interfaces are probably sending too much data (> 100MB/s)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
 
-  - alert: HostNetworkReceiveErrors
-    expr: increase(node_network_receive_errs_total[5m]) > 0
+  - alert: HostNetworkDrops
+    expr: increase(node_network_receive_drop_total[5m]) + increase(node_network_transmit_drop_total[5m]) > 0
     for: 5m
     labels:
       severity: warning
     annotations:
-      summary: "Host Network Receive Errors (instance {{ $labels.instance }})"
-      description: '{{ $labels.instance }} interface {{ $labels.device }} has encountered {{ printf "%.0f" $value }} receive errors in the last five minutes.\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}'
+      summary: "Host Network Dropss (instance {{ $labels.instance }})"
+      description: "{{ $labels.instance }} interface {{ $labels.device }} has network drops.\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
 
-  - alert: HostNetworkTransmitErrors
-    expr: increase(node_network_transmit_errs_total[5m]) > 0
+  - alert: HostNetworkErrors
+    expr: increase(node_network_receive_errs_total[5m]) + increase(node_network_transmit_errs_total[5m]) > 0
     for: 5m
     labels:
       severity: warning
     annotations:
-      summary: "Host Network Transmit Errors (instance {{ $labels.instance }})"
-      description: '{{ $labels.instance }} interface {{ $labels.device }} has encountered {{ printf "%.0f" $value }} transmit errors in the last five minutes.\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}'
+      summary: "Host Network Errors (instance {{ $labels.instance }})"
+      description: "{{ $labels.instance }} interface {{ $labels.device }} has network errors.\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
 
 - name: blackbox_exporter
   rules:
 
   - alert: BlackboxProbeFailed
     expr: probe_success == 0
-    for: 5m
+    #    for: 5m
+    for: 1m
     labels:
       severity: critical
     annotations:

@@ -29,6 +29,24 @@
   notify: restart prometheus service
   tags: prometheus
 
+- name: copy file_sd_configs node
+  copy:
+    src: templates/node.yml
+    dest: /etc/prometheus/targets/node.yml
+    owner: root
+    group: root
+    mode: '0644'
+  tags: prometheus
+
+- name: copy file_sd_configs service
+  copy:
+    src: templates/service.yml
+    dest: /etc/prometheus/targets/service.yml
+    owner: root
+    group: root
+    mode: '0644'
+  tags: prometheus
+
 - name: copy prometheus alert_rules file
   copy:
     src: templates/alert_rules.yml
