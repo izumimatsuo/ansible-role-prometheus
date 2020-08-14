@@ -11,6 +11,13 @@ CentOS7 へ監視機能を導入するansible-roleです
 | prometheus_server | メトリクスを収集・蓄積する         |
 | alertmanager      | アラート通知する                   |
 
+監視対象は、以下のファイルを設定する
+
+| ファイル名                          | 監視項目                       | 設定内容                   |
+| ----------------------------------- | ------------------------------ | -------------------------- |
+| /etc/prometheus/targets/service.yml | service の死活、レイテンシ監視 | URL を設定                 |
+| /etc/prometheus/targets/node.yml    | node の死活、リソース監視      | ホスト名かIPアドレスを設定 |
+
 ## 設定項目
 
 以下の設定項目は上書き可能。
@@ -23,13 +30,13 @@ CentOS7 へ監視機能を導入するansible-roleです
 
 ## アラート通知のルール
 
-### prometheus
+### job名: prometheus
 
 | アラート名                           | severity | 閾値     | 説明                  |
 | ------------------------------------ | -------- | -------- | --------------------- |
 | PrometheusTargetMissing              | warning  | 0        | exporter 障害         |
 
-### blackbox_exporter
+### job名: blackbox_exporter_icmp/http
 
 | アラート名                           | severity | 閾値     | 説明                  |
 | ------------------------------------ | -------- | -------- | --------------------- |
@@ -38,7 +45,7 @@ CentOS7 へ監視機能を導入するansible-roleです
 | BlackboxProbeSlowHttp                | warning  | > 1s     | HTTP レスポンス時間   |
 | BlackboxSslCertificateWillExpireSoon | warning  | < 30days | SSL証明書更新期日     |
 
-### node_exporter
+### job名: node_exporter
 
 | アラート名                      | severity | 閾値      | 説明                            |
 | ------------------------------- | -------- | --------- | ------------------------------- |
