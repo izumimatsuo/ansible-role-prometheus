@@ -3,5 +3,8 @@
   hosts: all
   vars:
     prometheus_server: yes
+    alert_email_host: 'mail.example.com:25'
+    alert_email_from: 'admin@example.com'
+    alert_email_to: 'user@maintainer.com'
   roles:
     - role: ansible-role-prometheus
