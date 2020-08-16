@@ -20,7 +20,7 @@ CentOS7 へ監視機能を導入するansible-roleです
 
 node_exporter の --collector.textfile.directory オプションを利用して独自のメトリクスを収集可能
 
-- prometheus_storage_path で指定したデータディレクトリにメトリクスデータを記述したフィアルを配置する
+- prometheus_storage_path で指定したデータディレクトリにメトリクスデータを記述したファイルを配置する
 - デフォルト値だと ```/var/lib/prometheus/collector``` に ```*.prom``` ファイルを配置する
 
 ## 設定項目
