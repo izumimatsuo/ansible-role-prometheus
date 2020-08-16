@@ -4,7 +4,7 @@ Description=node_exporter for Prometheus
 [Service]
 Restart=always
 User=prometheus
-ExecStart=/usr/local/bin/node_exporter
+ExecStart=/usr/local/bin/node_exporter --collector.textfile.directory {{ prometheus_collector_path }}
 ExecReload=/bin/kill -HUP $MAINPID
 TimeoutStopSec=20s
 SendSIGKILL=no

@@ -17,6 +17,15 @@
   when: not node_exporter_bin.stat.exists
   tags: prometheus
 
+- name: create textfile collector directory
+  file:
+    path: '{{ prometheus_collector_path }}'
+    state: directory
+    owner: prometheus
+    group: prometheus
+    mode: '0755'
+  tags: prometheus
+
 - name: copy node_exporter service file
   template:
     src: node_exporter.service.j2

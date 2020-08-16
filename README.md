@@ -18,6 +18,11 @@ CentOS7 へ監視機能を導入するansible-roleです
 | /etc/prometheus/targets/service.yml | service の死活、レイテンシ監視 | URL を設定                 |
 | /etc/prometheus/targets/node.yml    | node の死活、リソース監視      | ホスト名かIPアドレスを設定 |
 
+node_exporter の --collector.textfile.directory オプションを利用して独自のメトリクスを収集可能
+
+- prometheus_storage_path で指定したデータディレクトリにメトリクスデータを記述したフィアルを配置する
+- デフォルト値だと ```/var/lib/prometheus/collector``` に ```*.prom``` ファイルを配置する
+
 ## 設定項目
 
 以下の設定項目は上書き可能。
