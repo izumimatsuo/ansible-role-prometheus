@@ -17,3 +17,10 @@
     name: blackbox_exporter
     state: restarted
   tags: prometheus
+
+- name: restart consul-template service
+  service:
+    name: consul-template
+    state: restarted
+  when: test_skip is undefined
+  tags: prometheus

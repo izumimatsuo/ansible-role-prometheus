@@ -4,6 +4,7 @@ prometheus_server: no
 prometheus_storage_path: '/var/lib/prometheus'
 prometheus_collector_path: '{{ prometheus_storage_path }}/collector'
 prometheus_tsdb_retention_time: '15d' # --storage.tsdb.retention.time
+prometheus_node_dyna: no
 alert_email_host:
 alert_email_from:
 alert_email_to:

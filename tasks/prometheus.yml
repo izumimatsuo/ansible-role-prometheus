@@ -30,17 +30,49 @@
   tags: prometheus
 
 - name: copy file_sd_configs node
-  copy:
-    src: templates/node.yml
+  template:
+    src: node.yml.j2
     dest: /etc/prometheus/targets/node.yml
     owner: root
     group: root
     mode: '0644'
   tags: prometheus
 
+- name: copy node list update shell
+  template:
+    src: node_update.sh.j2
+    dest: /etc/prometheus/targets/node_update.sh
+    owner: root
+    group: root
+    mode: 0755
+  when: prometheus_node_dyna
+  tags: prometheus
+
+- name: copy node dyna conf
+  template:
+    src: node.list.tmpl.j2
+    dest: /etc/prometheus/targets/node.list.tmpl
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart consul-template service
+  when: prometheus_node_dyna
+  tags: prometheus
+
+- name: copy consul-template conf
+  template:
+    src: prometheus_node_dyna.conf.j2
+    dest: /etc/consul-template.d/prometheus_node_dyna.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart consul-template service
+  when: prometheus_node_dyna
+  tags: prometheus
+
 - name: copy file_sd_configs service
-  copy:
-    src: templates/service.yml
+  template:
+    src: service.yml.j2
     dest: /etc/prometheus/targets/service.yml
     owner: root
     group: root

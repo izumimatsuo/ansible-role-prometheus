@@ -1,0 +1,8 @@
+consul {
+  address = "127.0.0.1:8500"
+}
+template {
+  source = "/etc/prometheus/targets/node.list.tmpl"
+  destination = "/etc/prometheus/targets/node.list"
+  command = "/etc/prometheus/targets/node_update.sh"
+}

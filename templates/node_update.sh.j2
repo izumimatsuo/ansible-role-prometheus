@@ -1,0 +1,4 @@
+#!/bin/sh
+
+cd /etc/prometheus/targets
+sed '1d' node.list | grep -x -i -v -f node.yml >> node.yml
