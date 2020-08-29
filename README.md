@@ -29,9 +29,9 @@ node_exporter の --collector.textfile.directory オプションを利用して�
 
 | 項目名                         | デフォルト値        | 説明               |
 | ------------------------------ | ------------------- | ------------------ |
-| prometheus_server              | no                  | サーバへ導入       |
+| prometheus_is_server           | no                  | サーバへ導入       |
 | prometheus_storage_path        | /var/lib/prometheus | データディレクトリ |
-| prometheus_tsdb_retention_time | 15d                 | データ保存期間     |
+| prometheus_tsdb_retention_time | 30d                 | データ保存期間     |
 | prometheus_node_dyna           | no                  | node リストを自動更新 |
 | blackbox_probe_http_target     | []                  | http service リスト |
 | blackbox_probe_http_skip_verify | no                 | SSL証明書検証をスキップ |
