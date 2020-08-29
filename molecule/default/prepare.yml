@@ -5,3 +5,10 @@
     - name: setup net-tools package for test
       yum:
         name: net-tools
+    - name: create consul-template conf directory
+      file:
+        path: /etc/consul-template.d
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'

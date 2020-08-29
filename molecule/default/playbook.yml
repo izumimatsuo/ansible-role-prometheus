@@ -6,5 +6,6 @@
     alert_email_host: 'mail.example.com:25'
     alert_email_from: 'admin@example.com'
     alert_email_to: 'user@maintainer.com'
+    test_skip: true
   roles:
     - role: ansible-role-prometheus

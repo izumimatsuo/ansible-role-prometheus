@@ -38,6 +38,12 @@
     mode: '0644'
   tags: prometheus
 
+- name: detect consul-template conf directory
+  stat:
+    path: /etc/consul-template.d
+  register: consul_template_conf_dir
+  tags: prometheus
+
 - name: copy node list update shell
   template:
     src: node_update.sh.j2
@@ -45,7 +51,7 @@
     owner: root
     group: root
     mode: 0755
-  when: prometheus_node_dyna
+  when: consul_template_conf_dir.stat.exists
   tags: prometheus
 
 - name: copy node dyna conf
@@ -56,7 +62,7 @@
     group: root
     mode: 0644
   notify: restart consul-template service
-  when: prometheus_node_dyna
+  when: consul_template_conf_dir.stat.exists
   tags: prometheus
 
 - name: copy consul-template conf
@@ -67,7 +73,7 @@
     group: root
     mode: 0644
   notify: restart consul-template service
-  when: prometheus_node_dyna
+  when: consul_template_conf_dir.stat.exists
   tags: prometheus
 
 - name: copy file_sd_configs service
