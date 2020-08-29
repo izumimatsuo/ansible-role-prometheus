@@ -3,5 +3,9 @@ modules:
     prober: http
     http:
       preferred_ip_protocol: "ip4"
+{% if blackbox_probe_http_skip_verify %}
+      tls_config:
+        insecure_skip_verify: true
+{% endif %}
   icmp:
     prober: icmp

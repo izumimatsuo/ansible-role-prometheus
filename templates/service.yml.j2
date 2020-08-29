@@ -1,3 +1,5 @@
 ---
 - targets:
-  - http://localhost:8000
+{% for item in blackbox_probe_http_target %}
+  - {{ item }}
+{% endfor %}
