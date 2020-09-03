@@ -1,3 +1,5 @@
 ---
 - targets:
+{% if not consul_template_conf_dir.stat.exists %}
   - {{ ansible_host }}
+{% endif %}

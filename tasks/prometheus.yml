@@ -29,6 +29,12 @@
   notify: restart prometheus service
   tags: prometheus
 
+- name: detect consul-template conf directory
+  stat:
+    path: /etc/consul-template.d
+  register: consul_template_conf_dir
+  tags: prometheus
+
 - name: copy file_sd_configs node
   template:
     src: node.yml.j2
@@ -36,12 +42,6 @@
     owner: root
     group: root
     mode: '0644'
-  tags: prometheus
-
-- name: detect consul-template conf directory
-  stat:
-    path: /etc/consul-template.d
-  register: consul_template_conf_dir
   tags: prometheus
 
 - name: copy node list update shell
