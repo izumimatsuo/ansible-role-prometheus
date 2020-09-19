@@ -4,7 +4,6 @@
   stat:
     path: /usr/local/bin/node_exporter
   register: node_exporter_bin
-  tags: prometheus
 
 - block:
   - name: download node_exporter {{ NODE_EXPORTER_VERSION }}
@@ -15,7 +14,6 @@
   - name: install node_exporter
     command: mv /tmp/node_exporter-{{ NODE_EXPORTER_VERSION }}.linux-amd64/node_exporter /usr/local/bin/node_exporter
   when: not node_exporter_bin.stat.exists
-  tags: prometheus
 
 - name: create textfile collector directory
   file:
@@ -24,7 +22,6 @@
     owner: prometheus
     group: prometheus
     mode: '0755'
-  tags: prometheus
 
 - name: copy node_exporter service file
   template:
@@ -33,15 +30,12 @@
     owner: root
     group: root
     mode: '0644'
-  tags: prometheus
 
 - name: daemon-reload
   systemd: daemon_reload=yes
-  tags: prometheus
 
 - name: start node_exporter service
   service:
     name: node_exporter
     state: started
     enabled: yes
-  tags: prometheus

@@ -5,39 +5,25 @@
     name: prometheus
     createhome: no
     shell: /sbin/nologin
-  tags: prometheus
-
-- name: create prometheus conf directory
-  file:
-    path: /etc/prometheus/targets
-    state: directory
-    owner: root
-    group: root
-    mode: '0755'
-  when: prometheus_is_server
-  tags: prometheus
-
-- name: create prometheus data directory
-  file:
-    path: '{{ prometheus_storage_path }}'
-    state: directory
-    owner: prometheus
-    group: prometheus
-    mode: '0755'
-  when: prometheus_is_server
-  tags: prometheus
 
 - include_tasks: node_exporter.yml
-  tags: prometheus
 
-- include_tasks: prometheus.yml
-  when: prometheus_is_server
-  tags: prometheus
-
-- include_tasks: alertmanager.yml
-  when: prometheus_is_server
-  tags: prometheus
-
-- include_tasks: blackbox_exporter.yml
-  when: prometheus_is_server
-  tags: prometheus
+- block:
+  - name: create prometheus conf directory
+    file:
+      path: /etc/prometheus/targets
+      state: directory
+      owner: root
+      group: root
+      mode: '0755'
+  - name: create prometheus data directory
+    file:
+      path: '{{ prometheus_storage_path }}'
+      state: directory
+      owner: prometheus
+      group: prometheus
+      mode: '0755'
+  - include_tasks: blackbox_exporter.yml
+  - include_tasks: alertmanager.yml
+  - include_tasks: prometheus.yml
+  when: prometheus_server_hostnames != None and inventory_hostname in prometheus_server_hostnames

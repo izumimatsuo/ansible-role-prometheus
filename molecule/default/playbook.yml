@@ -2,7 +2,7 @@
 - name: Converge
   hosts: all
   vars:
-    prometheus_is_server: yes
+    prometheus_server_hostnames: ['instance']
     alert_email_host: 'mail.example.com:25'
     alert_email_from: 'admin@example.com'
     alert_email_to: 'user@maintainer.com'

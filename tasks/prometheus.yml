@@ -4,7 +4,6 @@
   stat:
     path: /usr/local/bin/prometheus
   register: prometheus_bin
-  tags: prometheus
 
 - block:
   - name: download prometheus {{ PROMETHEUS_VERSION }}
@@ -17,7 +16,6 @@
   - name: install promtool
     command: mv /tmp/prometheus-{{ PROMETHEUS_VERSION }}.linux-amd64/promtool /usr/local/bin/promtool
   when: not prometheus_bin.stat.exists
-  tags: prometheus
 
 - name: copy prometheus conf file
   template:
@@ -27,13 +25,11 @@
     group: root
     mode: '0644'
   notify: restart prometheus service
-  tags: prometheus
 
 - name: detect consul-template conf directory
   stat:
     path: /etc/consul-template.d
   register: consul_template_conf_dir
-  tags: prometheus
 
 - name: copy file_sd_configs node
   template:
@@ -42,39 +38,6 @@
     owner: root
     group: root
     mode: '0644'
-  tags: prometheus
-
-- name: copy node list update shell
-  template:
-    src: node_update.sh.j2
-    dest: /etc/prometheus/targets/node_update.sh
-    owner: root
-    group: root
-    mode: 0755
-  when: consul_template_conf_dir.stat.exists
-  tags: prometheus
-
-- name: copy node dyna conf
-  template:
-    src: node.list.tmpl.j2
-    dest: /etc/prometheus/targets/node.list.tmpl
-    owner: root
-    group: root
-    mode: 0644
-  notify: restart consul-template service
-  when: consul_template_conf_dir.stat.exists
-  tags: prometheus
-
-- name: copy consul-template conf
-  template:
-    src: prometheus_node_dyna.conf.j2
-    dest: /etc/consul-template.d/prometheus_node_dyna.conf
-    owner: root
-    group: root
-    mode: 0644
-  notify: restart consul-template service
-  when: consul_template_conf_dir.stat.exists
-  tags: prometheus
 
 - name: copy file_sd_configs service
   template:
@@ -83,7 +46,32 @@
     owner: root
     group: root
     mode: '0644'
-  tags: prometheus
+
+- block:
+  - name: copy node list update shell
+    template:
+      src: node_update.sh.j2
+      dest: /etc/prometheus/targets/node_update.sh
+      owner: root
+      group: root
+      mode: 0755
+  - name: copy node dyna conf
+    template:
+      src: node.list.tmpl.j2
+      dest: /etc/prometheus/targets/node.list.tmpl
+      owner: root
+      group: root
+      mode: 0644
+    notify: restart consul-template service
+  - name: copy consul-template conf
+    template:
+      src: prometheus_node_dyna.conf.j2
+      dest: /etc/consul-template.d/prometheus_node_dyna.conf
+      owner: root
+      group: root
+      mode: 0644
+    notify: restart consul-template service
+  when: consul_template_conf_dir.stat.exists
 
 - name: copy prometheus alert_rules file
   copy:
@@ -93,7 +81,6 @@
     group: root
     mode: '0644'
   notify: restart prometheus service
-  tags: prometheus
 
 - name: copy prometheus service file
   template:
@@ -102,15 +89,12 @@
     owner: root
     group: root
     mode: '0644'
-  tags: prometheus
 
 - name: daemon-reload
   systemd: daemon_reload=yes
-  tags: prometheus
 
 - name: start prometheus service
   service:
     name: prometheus
     state: started
     enabled: yes
-  tags: prometheus

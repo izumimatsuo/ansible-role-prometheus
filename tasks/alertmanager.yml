@@ -4,7 +4,6 @@
   stat:
     path: /usr/local/bin/alertmanager
   register: alertmanager_bin
-  tags: prometheus
 
 - block:
   - name: download alertmanager {{ ALERTMANAGER_VERSION }}
@@ -17,7 +16,6 @@
   - name: install amtool
     command: mv /tmp/alertmanager-{{ ALERTMANAGER_VERSION }}.linux-amd64/amtool /usr/local/bin/amtool
   when: not alertmanager_bin.stat.exists
-  tags: prometheus
 
 - name: copy alertmanaer conf file
   template:
@@ -27,7 +25,6 @@
     group: root
     mode: '0644'
   notify: restart alertmanager service
-  tags: prometheus
 
 - name: copy alertmanager service file
   template:
@@ -36,15 +33,12 @@
     owner: root
     group: root
     mode: '0644'
-  tags: prometheus
 
 - name: daemon-reload
   systemd: daemon_reload=yes
-  tags: prometheus
 
 - name: start alertmanager service
   service:
     name: alertmanager
     state: started
     enabled: yes
-  tags: prometheus
