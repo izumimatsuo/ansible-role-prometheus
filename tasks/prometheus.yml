@@ -26,11 +26,6 @@
     mode: '0644'
   notify: restart prometheus service
 
-- name: detect consul-template conf directory
-  stat:
-    path: /etc/consul-template.d
-  register: consul_template_conf_dir
-
 - name: copy file_sd_configs node
   template:
     src: node.yml.j2
@@ -39,13 +34,19 @@
     group: root
     mode: '0644'
 
-- name: copy file_sd_configs service
+- name: copy file_sd_configs probe http
   template:
-    src: service.yml.j2
-    dest: /etc/prometheus/targets/service.yml
+    src: probe_http.yml.j2
+    dest: /etc/prometheus/targets/probe_http.yml
     owner: root
     group: root
     mode: '0644'
+  when: blackbox_probe_http_targets != None
+
+- name: detect consul-template conf directory
+  stat:
+    path: /etc/consul-template.d
+  register: consul_template_conf_dir
 
 - block:
   - name: copy node list update shell

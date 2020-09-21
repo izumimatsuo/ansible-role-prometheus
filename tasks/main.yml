@@ -23,6 +23,10 @@
       owner: prometheus
       group: prometheus
       mode: '0755'
+  - name: detect consul is installed
+    stat:
+      path: /usr/local/bin/consul
+    register: consul_bin
   - include_tasks: blackbox_exporter.yml
   - include_tasks: alertmanager.yml
   - include_tasks: prometheus.yml

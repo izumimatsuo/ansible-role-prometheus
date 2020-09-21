@@ -13,10 +13,11 @@ CentOS7 へ監視機能を導入するansible-roleです
 
 監視対象は、以下のファイルを設定する
 
-| ファイル名                          | 監視項目                       | 設定内容                   |
-| ----------------------------------- | ------------------------------ | -------------------------- |
-| /etc/prometheus/targets/service.yml | service の死活、レイテンシ監視 | URL を設定                 |
-| /etc/prometheus/targets/node.yml    | node の死活、リソース監視      | ホスト名かIPアドレスを設定 |
+| ファイル名                             | 監視項目                       | 設定内容                   |
+| -------------------------------------- | ------------------------------ | -------------------------- |
+| /etc/prometheus/targets/node.yml       | node の死活、リソース監視      | ホスト名かIPアドレスを設定 |
+| /etc/prometheus/targets/probe_icmp.yml | node の死活                    | ホスト名かIPアドレスを設定 |
+| /etc/prometheus/targets/probe_http.yml | service の死活、レイテンシ監視 | URL を設定                 |
 
 node_exporter の --collector.textfile.directory オプションを利用して独自のメトリクスを収集可能
 
@@ -32,7 +33,7 @@ node_exporter の --collector.textfile.directory オプションを利用して�
 | prometheus_server_hostnames    | none                | サーバの inventory 名 |
 | prometheus_storage_path        | /var/lib/prometheus | データディレクトリ |
 | prometheus_tsdb_retention_time | 30d                 | データ保存期間     |
-| blackbox_probe_http_target     | []                  | http service リスト |
+| blackbox_probe_http_targets    | none                | http service リスト |
 | blackbox_probe_http_skip_verify | no                 | SSL証明書検証をスキップ |
 | alert_email_host               | none                | メールホスト       |
 | alert_email_from               | none                | メール送信元       |

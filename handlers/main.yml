@@ -9,6 +9,7 @@
   service:
     name: alertmanager
     state: restarted
+  when: inventory_hostname == prometheus_server_hostnames[0]
 
 - name: restart blackbox_exporter service
   service:

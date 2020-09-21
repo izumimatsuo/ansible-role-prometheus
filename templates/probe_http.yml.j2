@@ -1,0 +1,5 @@
+---
+- targets:
+{% for item in blackbox_probe_http_targets %}
+  - {{ item }}
+{% endfor %}

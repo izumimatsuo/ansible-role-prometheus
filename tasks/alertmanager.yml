@@ -42,3 +42,4 @@
     name: alertmanager
     state: started
     enabled: yes
+  when: inventory_hostname == prometheus_server_hostnames[0]

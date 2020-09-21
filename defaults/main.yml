@@ -1,10 +1,10 @@
 ---
 # defaults file for ansible-role-prometheus
-prometheus_is_server: no
+prometheus_server_hostnames:
 prometheus_storage_path: '/var/lib/prometheus'
 prometheus_collector_path: '{{ prometheus_storage_path }}/collector'
 prometheus_tsdb_retention_time: '30d' # --storage.tsdb.retention.time
-blackbox_probe_http_target: ['http://localhost:9090']
+blackbox_probe_http_targets:
 blackbox_probe_http_skip_verify: no
 alert_email_host:
 alert_email_from:

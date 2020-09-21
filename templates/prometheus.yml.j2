@@ -6,7 +6,10 @@ global:
 alerting:
   alertmanagers:
   - static_configs:
-    - targets: ['localhost:9093']
+    - targets:
+{% for item in prometheus_server_hostnames %}
+      - {{ item if consul_bin.stat.exists else hostvars[item]['ansible_host'] if hostvars[item]['ansible_host'] is defined else 'localhost' }}:9093
+{% endfor %}
 
 rule_files:
   - 'alert_rules.yml'
@@ -14,15 +17,22 @@ rule_files:
 scrape_configs:
   - job_name: 'prometheus'
     static_configs:
-      - targets: ['localhost:9090']
+      - targets:
+{% for item in prometheus_server_hostnames %}
+        - {{ item if consul_bin.stat.exists else hostvars[item]['ansible_host'] if hostvars[item]['ansible_host'] is defined else 'localhost' }}:9090
+{% endfor %}
 
   - job_name: 'alertmanager'
     static_configs:
-      - targets: ['localhost:9093']
+      - targets:
+{% if inventory_hostname == prometheus_server_hostnames[0] %}
+        - {{ inventory_hostname if consul_bin.stat.exists else ansible_host if ansible_host is defined else 'localhost' }}:9093
+{% endif %}
 
   - job_name: 'node_exporter'
     file_sd_configs:
-      - files: ['/etc/prometheus/targets/node.yml']
+      - files:
+        - /etc/prometheus/targets/node.yml
     relabel_configs:
       - source_labels: [__address__]
         target_label: __address__
@@ -34,7 +44,8 @@ scrape_configs:
     params:
       module: [http_2xx]
     file_sd_configs:
-      - files: ['/etc/prometheus/targets/service.yml']
+      - files:
+        - /etc/prometheus/targets/probe_http.yml
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
@@ -48,7 +59,9 @@ scrape_configs:
     params:
       module: [icmp]
     file_sd_configs:
-      - files: ['/etc/prometheus/targets/node.yml']
+      - files:
+        - /etc/prometheus/targets/node.yml
+        - /etc/prometheus/targets/probe_icmp.yml
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target

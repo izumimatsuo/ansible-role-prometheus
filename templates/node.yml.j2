@@ -1,5 +1,5 @@
 ---
 - targets:
-{% if not consul_template_conf_dir.stat.exists %}
-  - {{ ansible_host }}
-{% endif %}
+{% for item in prometheus_server_hostnames %}
+  - {{ item if consul_bin.stat.exists else hostvars[item]['ansible_host'] if hostvars[item]['ansible_host'] is defined else 'localhost' }}
+{% endfor %}
